@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 apply plugin: 'com.android.application'
 
 //
@@ -15,14 +17,24 @@ apply plugin: 'com.android.application'
 // Include common definitions from above.
 apply from: '../build.common.gradle'
 apply from: '../build.dependencies.gradle'
+apply plugin: 'org.jetbrains.kotlin.android'
 
 android {
     namespace = 'org.firstinspires.ftc.teamcode'
+
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_1_8)
+            freeCompilerArgs.add("-Xjvm-expose-boxed")
+        }
+    }
 
     packagingOptions {
         jniLibs.useLegacyPackaging true
     }
 }
+
+
 
 repositories {
     maven {
@@ -50,14 +62,11 @@ dependencies {
 
     implementation "org.solverslib:core:0.3.6" // core
     implementation "org.solverslib:pedroPathing:0.3.6" // pedroPathing
-    implementation "org.solverslib:photon:0.3.6" // photon is optional (see docs for more info)
-
-    implementation "com.acmerobotics.dashboard:dashboard:0.5.1" // FTC Dashboard
 
     // Pedro Pathing
     implementation 'com.pedropathing:revhub:3.0.0'
     implementation 'com.pedropathing:tuning:1.0.0' // AutoTune (see Tuning.java)
 
     // Panels Dashboard
-    implementation "com.bylazar:fullpanels:1.0.12"
+    implementation "com.bylazar:fullpanels:1.0.13"
 }
