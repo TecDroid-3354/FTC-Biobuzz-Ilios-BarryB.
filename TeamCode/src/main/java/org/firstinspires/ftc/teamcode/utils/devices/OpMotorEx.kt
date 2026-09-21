@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients
 import com.seattlesolvers.solverslib.controller.PIDFController
 import com.seattlesolvers.solverslib.controller.wpilibcontroller.SimpleMotorFeedforward
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 import org.firstinspires.ftc.teamcode.utils.units.Angle
 import org.firstinspires.ftc.teamcode.utils.units.AngularVelocity
 import org.firstinspires.ftc.teamcode.utils.configurations.OpMotorExConfiguration
@@ -71,6 +72,13 @@ class OpMotorEx(hardwareMap: HardwareMap, motorId: String) {
      * @return the motor's set power
      */
     fun getOutput(): Double { return motor.get() }
+
+    /**
+     * Whether the motor is connected. If the Current drawn by the motor is less than 10 milliamps it will return true.
+     * 10 milliamps is an arbitrary value
+     * @return whether the motor is connected
+     */
+    fun getIsConnected(): BooleanSupplier { return { (motor.motorEx.getCurrent(CurrentUnit.MILLIAMPS) < 10.0).not() }}
 
     // ------ MOTOR CONTROL MODE COMMANDS -----//
     /**
@@ -139,7 +147,7 @@ class OpMotorEx(hardwareMap: HardwareMap, motorId: String) {
      * call the built-in [com.seattlesolvers.solverslib.hardware.motors.Motor.stopMotor] as it interferes with the velocity
      * mode's commands.
      */
-    fun stopMotor() { motor.set(0.0) }
+    fun stopMotor(): Runnable { return { motor.set(0.0) } }
 
     /**
      * Checks whether the [positionController] or the [trapezoidalController]'s position is near its target or at it
@@ -161,6 +169,42 @@ class OpMotorEx(hardwareMap: HardwareMap, motorId: String) {
      * @return this [OpMotorEx] correspondent [MotorEx] instance
      */
     fun getMotorInstance(): MotorEx { return motor }
+
+    // --------- PID and Feedforward configurables update -------- //
+
+    fun hadVelocityPIDControlGainsUpdated(pidCoefficients: PIDCoefficients): Boolean {
+        val kP = motor.veloCoefficients[0]
+        val kI = motor.veloCoefficients[1]
+        val kD = motor.veloCoefficients[2]
+
+        return kP.equals(pidCoefficients.p).not() || kI.equals(pidCoefficients.i).not() || kD.equals(pidCoefficients.d).not()
+    }
+
+    fun hadVelocityFeedforwardControlGainsUpdated(feedforward: SimpleMotorFeedforward): Boolean {
+        val kS = motor.feedforwardCoefficients[0]
+        val kV = motor.feedforwardCoefficients[1]
+        val kA = motor.feedforwardCoefficients[2]
+
+        return kS.equals(feedforward.ks).not() || kV.equals(feedforward.kv).not() || kA.equals(feedforward.ka).not()
+    }
+
+    fun hadPIDFPositionControlGainsUpdated(pidfCoefficients: PIDFCoefficients): Boolean {
+        val kP = positionController.p
+        val kI = positionController.i
+        val kD = positionController.d
+        val kF = positionController.f
+
+        return kP.equals(pidfCoefficients.p).not() || kI.equals(pidfCoefficients.i).not() ||
+                kD.equals(pidfCoefficients.d).not() || kF.equals(pidfCoefficients.f).not()
+    }
+
+    fun hadTrapezoidalControlGainsUpdated(pidCoefficients: PIDCoefficients): Boolean {
+        val kP = trapezoidalController.getPID().p
+        val kI = trapezoidalController.getPID().i
+        val kD = trapezoidalController.getPID().d
+
+        return kP.equals(pidCoefficients.p).not() || kI.equals(pidCoefficients.i).not() || kD.equals(pidCoefficients.d).not()
+    }
 
     /**
      * Per-instance update logic. Called automatically for every existing [OpMotorEx] inside [TecDroidRobot]
@@ -282,40 +326,5 @@ class OpMotorEx(hardwareMap: HardwareMap, motorId: String) {
         fun clearRegistry() {
             registry.clear()
         }
-    }
-    // --------- PID and Feedforward tunables update -------- //
-
-    fun hadPIDVelocityControllerUpdated(pidCoefficients: PIDCoefficients): Boolean {
-        val kP = motor.veloCoefficients[0]
-        val kI = motor.veloCoefficients[1]
-        val kD = motor.veloCoefficients[2]
-
-        return kP.equals(pidCoefficients.p).not() || kI.equals(pidCoefficients.i).not() || kD.equals(pidCoefficients.d).not()
-    }
-
-    fun hadVelocityFeedforwardControllerUpdated(feedforward: SimpleMotorFeedforward): Boolean {
-        val kS = motor.feedforwardCoefficients[0]
-        val kV = motor.feedforwardCoefficients[1]
-        val kA = motor.feedforwardCoefficients[2]
-
-        return kS.equals(feedforward.ks).not() || kV.equals(feedforward.kv).not() || kA.equals(feedforward.ka).not()
-    }
-
-    fun hadPIDFPositionControllerUpdated(pidfCoefficients: PIDFCoefficients): Boolean {
-        val kP = positionController.p
-        val kI = positionController.i
-        val kD = positionController.d
-        val kF = positionController.f
-
-        return kP.equals(pidfCoefficients.p).not() || kI.equals(pidfCoefficients.i).not() ||
-                kD.equals(pidfCoefficients.d).not() || kF.equals(pidfCoefficients.f).not()
-    }
-
-    fun hadTrapezoidalControllerUpdated(pidCoefficients: PIDCoefficients): Boolean {
-        val kP = trapezoidalController.getPID().p
-        val kI = trapezoidalController.getPID().i
-        val kD = trapezoidalController.getPID().d
-
-        return kP.equals(pidCoefficients.p).not() || kI.equals(pidCoefficients.i).not() || kD.equals(pidCoefficients.d).not()
     }
 }

@@ -96,6 +96,14 @@ class OpServoEx(private val hardwareMap: HardwareMap, private val servoId: Strin
         rtpServo.setPIDF(coefficients)
     }
 
+    fun getRawPosition(): Double {
+        if (controlMode != ServoControlMode.POSITION) {
+            return 0.0
+        }
+
+        return servo.rawPosition
+    }
+
     // TODO() Add comment
     fun getAngle(): Angle {
         if (controlMode != ServoControlMode.RUN_TO_POSITION) {

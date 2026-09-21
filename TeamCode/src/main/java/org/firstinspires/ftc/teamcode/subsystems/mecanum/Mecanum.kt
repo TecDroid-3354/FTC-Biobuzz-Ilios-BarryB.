@@ -3,16 +3,16 @@ package org.firstinspires.ftc.teamcode.subsystems.mecanum
 import com.pedropathing.follower.Follower
 import com.pedropathing.follower.ManualDrive
 import com.pedropathing.math.Pose
-import com.pedropathing.math.Velocity
 import com.pedropathing.paths.Path
 import com.seattlesolvers.solverslib.command.Command
-import com.seattlesolvers.solverslib.command.InstantCommand
 import com.seattlesolvers.solverslib.command.RunCommand
 import com.seattlesolvers.solverslib.command.SubsystemBase
 import com.seattlesolvers.solverslib.gamepad.GamepadEx
 import com.seattlesolvers.solverslib.geometry.Rotation2d
+import com.seattlesolvers.solverslib.kinematics.wpilibkinematics.ChassisSpeeds
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D
+import org.firstinspires.ftc.teamcode.constants.DriveMultipliers
 import org.firstinspires.ftc.teamcode.utils.Alliance
 import org.firstinspires.ftc.teamcode.utils.units.Distance
 
@@ -37,9 +37,9 @@ class Mecanum(
     fun driveFollowingDriverInput(): Command {
         return RunCommand({
             val fieldCentricDrive = ManualDrive.fieldCentric(
-                -controller.leftY * MecanumConstants.Control.FORWARD_VELOCITY_MULTIPLIER * alliance.multiplier,
-                controller.leftX * MecanumConstants.Control.LATERAL_VELOCITY_MULTIPLIER * alliance.multiplier,
-                controller.rightX * MecanumConstants.Control.TURN_VELOCITY_MULTIPLIER,
+                -controller.leftY * DriveMultipliers.FORWARD_VELOCITY_MULTIPLIER * alliance.multiplier,
+                controller.leftX * DriveMultipliers.LATERAL_VELOCITY_MULTIPLIER * alliance.multiplier,
+                controller.rightX * DriveMultipliers.TURN_VELOCITY_MULTIPLIER,
                 follower.pose().heading()
             )
 
@@ -65,11 +65,21 @@ class Mecanum(
     }
 
     /**
-     * Gets the current [Follower]'s velocity as a [Velocity]
-     * @return the current robot's velocity
+     * Gets the current [Follower]'s velocity as a [ChassisSpeeds].
+     * This represents the velocity of the robot in the field.
+     * @return the current in the field's frame
      */
-    fun getVelocity(): Velocity {
-        return follower.velocity()
+    fun getFieldRelativeVelocity(): ChassisSpeeds {
+        return ChassisSpeeds(follower.velocity().vx, follower.velocity().vy, follower.velocity().omega)
+    }
+
+    /**
+     * Gets the current [Follower]'s velocity as a [ChassisSpeeds].
+     * This represents the velocity of the robot.
+     * @return the current robot's velocity in the robot's frame
+     */
+    fun getRobotRelativeVelocity(): ChassisSpeeds {
+        return ChassisSpeeds(follower.twist().vx, follower.twist().vy, follower.twist().omega)
     }
 
     /**
