@@ -4,10 +4,7 @@ import com.pedropathing.follower.Follower
 import com.pedropathing.math.Pose
 import com.pedropathing.paths.Path
 import com.qualcomm.robotcore.hardware.HardwareMap
-import com.qualcomm.robotcore.hardware.PIDFCoefficients
-import com.qualcomm.robotcore.util.ElapsedTime
 import com.seattlesolvers.solverslib.command.Command
-import com.seattlesolvers.solverslib.command.InstantCommand
 import com.seattlesolvers.solverslib.gamepad.GamepadEx
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
@@ -15,14 +12,6 @@ import org.firstinspires.ftc.teamcode.subsystems.mecanum.Mecanum
 import org.firstinspires.ftc.teamcode.utils.Alliance
 import org.firstinspires.ftc.teamcode.utils.TecDroidRobot
 import org.firstinspires.ftc.teamcode.utils.autonomous.PoseStorage
-import org.firstinspires.ftc.teamcode.utils.devices.RTPServo
-import org.firstinspires.ftc.teamcode.utils.devices.RTPServoConfig
-import org.firstinspires.ftc.teamcode.utils.extensions.onFalse
-import org.firstinspires.ftc.teamcode.utils.extensions.onTrue
-import org.firstinspires.ftc.teamcode.utils.extensions.rightBumper
-import org.firstinspires.ftc.teamcode.utils.units.Angle
-import org.firstinspires.ftc.teamcode.utils.units.Voltage
-import java.util.concurrent.TimeUnit
 
 class Robot(
     private val alliance: Alliance,
