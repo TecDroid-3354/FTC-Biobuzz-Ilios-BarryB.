@@ -121,6 +121,14 @@ class OpServoEx(private val hardwareMap: HardwareMap, private val servoId: Strin
         return rtpServo.getPIDFCoefficients()
     }
 
+    fun hadRTPCoefficientsUpdated(pidfCoefficients: PIDFCoefficients): Boolean {
+        if (controlMode != ServoControlMode.RUN_TO_POSITION) {
+            return false
+        }
+
+        return rtpServo.hadPIDFCoefficientsUpdated(pidfCoefficients)
+    }
+
     fun logRTP(telemetry: TelemetryManager) {
         if (controlMode != ServoControlMode.RUN_TO_POSITION) {
             return
@@ -310,6 +318,10 @@ private class RTPServo(hw: HardwareMap, val config: RTPServoConfig) {
      */
     fun setPIDF(pidfCoefficients: PIDFCoefficients) {
         pidfController.setPIDF(pidfCoefficients)
+    }
+
+    fun hadPIDFCoefficientsUpdated(pidfCoefficients: PIDFCoefficients): Boolean {
+        return (pidfController.getCoefficients() == pidfCoefficients).not()
     }
 
     fun getPIDF(): PIDFCoefficients {

@@ -8,13 +8,24 @@ import com.seattlesolvers.solverslib.command.Command
 import com.seattlesolvers.solverslib.command.RunCommand
 import com.seattlesolvers.solverslib.command.SubsystemBase
 import com.seattlesolvers.solverslib.gamepad.GamepadEx
+import com.seattlesolvers.solverslib.geometry.Pose2d
 import com.seattlesolvers.solverslib.geometry.Rotation2d
+import com.seattlesolvers.solverslib.geometry.Translation2d
+import com.seattlesolvers.solverslib.geometry.Vector2d
 import com.seattlesolvers.solverslib.kinematics.wpilibkinematics.ChassisSpeeds
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D
+import org.firstinspires.ftc.teamcode.autonomous.paths.examplePaths.Line
 import org.firstinspires.ftc.teamcode.constants.DriveMultipliers
 import org.firstinspires.ftc.teamcode.utils.Alliance
+import org.firstinspires.ftc.teamcode.utils.extensions.h
+import org.firstinspires.ftc.teamcode.utils.extensions.toPose2D
+import org.firstinspires.ftc.teamcode.utils.extensions.toPose2d
+import org.firstinspires.ftc.teamcode.utils.units.Angle
 import org.firstinspires.ftc.teamcode.utils.units.Distance
+import org.firstinspires.ftc.teamcode.utils.units.LinearVelocity
+import java.util.Optional
+import kotlin.math.atan2
 
 class Mecanum(
     private val follower: Follower,
@@ -52,8 +63,8 @@ class Mecanum(
      * Gets the Follower's current position.
      * @return a [Pose2D] containing the robot's current position in the standard FTC Coordinates
      */
-    fun getPose(): Pose {
-        return follower.pose()
+    fun getPose(): Pose2d {
+        return follower.pose().toPose2d()
     }
 
     /**
@@ -61,7 +72,7 @@ class Mecanum(
      * @return a [Rotation2d] as the robot's current heading in radians.
      */
     fun getRotation(): Rotation2d {
-        return Rotation2d(getPose().heading())
+        return Rotation2d(getPose().heading)
     }
 
     /**
@@ -83,6 +94,64 @@ class Mecanum(
     }
 
     /**
+     * Constructs a vector from the robot to a target and returns the projection of the velocity vector onto the distance unit vector.
+     * If the result is positive, then the robot is driving towards the target.
+     * If the result is negative, then the robot is driving away from the target.
+     */
+    fun getRobotRadialVelocity(fieldToTarget: Translation2d): LinearVelocity {
+        val fieldRelativeVelocity = getFieldRelativeVelocity()
+        val robotToTargetVector = fieldToTarget.minus(getPose().translation)
+        val robotToTargetDistance = robotToTargetVector.norm
+
+        if (robotToTargetDistance < 1e-5) return LinearVelocity(0.0)
+
+        val radialUnitTranslation = robotToTargetVector.div(robotToTargetDistance)
+        val radialUnitVector = Vector2d(radialUnitTranslation.x, radialUnitTranslation.y)
+
+        val velocityVector = Vector2d(fieldRelativeVelocity.vxMetersPerSecond, fieldRelativeVelocity.vyMetersPerSecond)
+        val radialVectorNorm = velocityVector.dot(radialUnitVector)
+
+        return LinearVelocity.fromMps(radialVectorNorm)
+    }
+
+    /**
+     * Constructs a vector from the robot to a target, the rotates it by 90.0 degrees and returns the projection of the velocity vector onto the tangential unit vector.
+     * If the result is positive, then the robot is driving towards the target.
+     * If the result is negative, then the robot is driving away from the target.
+     */
+    fun getRobotTangentialVelocity(fieldToTarget: Translation2d): LinearVelocity {
+        val fieldRelativeSpeeds = getFieldRelativeVelocity()
+
+        val robotToTargetVector = fieldToTarget.minus(getPose().translation)
+        val robotToTargetDistance = robotToTargetVector.norm
+
+        if (robotToTargetDistance < 1e-5) return LinearVelocity(0.0)
+
+        val radialUnitTranslation = robotToTargetVector.div(robotToTargetDistance)
+        val tangentialUnitTranslation = radialUnitTranslation.rotateBy(Rotation2d.fromDegrees(90.0))
+        val tangentialUnitVector = Vector2d(tangentialUnitTranslation.x, tangentialUnitTranslation.y)
+
+        val velocityVector = Vector2d(fieldRelativeSpeeds.vxMetersPerSecond, fieldRelativeSpeeds.vyMetersPerSecond)
+        val tangentialVectorNorm = velocityVector.dot(tangentialUnitVector)
+
+        return LinearVelocity.fromMps(tangentialVectorNorm)
+    }
+
+    /**
+     * Constructs a vector from the robot to a target and returns its angle plus an [Optional] [Rotation2d]
+     * @return the angle of the vector plus the offset
+     */
+    fun getAngleFromRobotToTarget(fieldToTarget: Translation2d, headingOffset: Optional<Rotation2d>): Angle {
+        val robotToTargetVector = fieldToTarget.minus(getPose().translation)
+
+        val targetAngle = Rotation2d(
+            atan2(robotToTargetVector.y, robotToTargetVector.x)
+        ).plus(headingOffset.orElse(Rotation2d()))
+
+        return Angle.fromRadians(targetAngle.radians)
+    }
+
+    /**
      * Gets the distance of the chassis to any target passed to this function.
      * Uses the [Pose.distance] method to calculate the distance.
      * @param target the target to get the distance from
@@ -99,8 +168,8 @@ class Mecanum(
     }
 
     /**
-     * Sets a new [Pose2D] to our robot's chassis.
-     * @param pose a pose representing the new robot's [Pose2D]. Note that it must be in STANDARD FTC coordinates.
+     * Sets a new [Pose] to our robot's chassis.
+     * @param pose a pose representing the new robot's [Pose].
      */
     fun setPose(pose: Pose) {
         follower.setPose(pose)

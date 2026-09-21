@@ -8,6 +8,7 @@ import com.seattlesolvers.solverslib.command.SubsystemBase
 import com.seattlesolvers.solverslib.controller.wpilibcontroller.SimpleMotorFeedforward
 import org.firstinspires.ftc.teamcode.constants.SubsystemConfigurableTargets
 import org.firstinspires.ftc.teamcode.constants.SubsystemControlGains
+import org.firstinspires.ftc.teamcode.constants.SubsystemLimits
 import org.firstinspires.ftc.teamcode.constants.SubsystemPresetTargets
 import org.firstinspires.ftc.teamcode.utils.devices.OpMotorEx
 import org.firstinspires.ftc.teamcode.utils.devices.configurations.motorControlModeConfiguration.MotorVelocityModeConfiguration
@@ -18,6 +19,8 @@ import org.firstinspires.ftc.teamcode.utils.units.AngularVelocity
 class IntakeRollers(hardwareMap: HardwareMap): SubsystemBase() {
 
     private var intakeRollersMotor: OpMotorEx
+
+    private var intakeRollersTargetVelocity: AngularVelocity = AngularVelocity(0.0)
     
     init {
         intakeRollersMotor = OpMotorEx(hardwareMap,IntakeRollersConstants.Identification.INTAKE_ROLLERS_MOTOR_ID)
@@ -40,7 +43,11 @@ class IntakeRollers(hardwareMap: HardwareMap): SubsystemBase() {
     }
 
     private fun enableIntakeRollersWithVelocity(velocity: AngularVelocity): Runnable {
-        return { intakeRollersMotor.setVelocity(velocity) }
+        return {
+            intakeRollersTargetVelocity = velocity.coerceIn(SubsystemLimits.INTAKE_MAX_VELOCITY)
+
+            intakeRollersMotor.setVelocity(velocity)
+        }
     }
 
     fun enableIntakeRollersFloorVelocity(): Command {
@@ -62,5 +69,6 @@ class IntakeRollers(hardwareMap: HardwareMap): SubsystemBase() {
     fun log(telemetry: TelemetryManager) {
         telemetry.addLine("Intake Rollers")
         telemetry.addData("Intake Rollers Velocity RPM", intakeRollersMotor.getVelocity().get().rpm)
+        telemetry.addData("Intake Rollers Target Velocity RPM", intakeRollersMotor.getVelocity().get().rpm)
     }
 }

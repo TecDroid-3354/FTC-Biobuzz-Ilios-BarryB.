@@ -18,6 +18,8 @@ class Hood(private val hardwareMap: HardwareMap): SubsystemBase() {
 
     private lateinit var hoodServo: OpServoEx
 
+    private var hoodTargetAngle: Angle = Angle(0.0)
+
     init {
         configureServo()
     }
@@ -26,6 +28,8 @@ class Hood(private val hardwareMap: HardwareMap): SubsystemBase() {
         return Runnable {
             val clampedAngle = angle.coerceIn(SubsystemLimits.HOOD_MOVEMENT_LIMITS)
             val transformedAngle = clampedAngle.degrees * HoodConstants.Mechanical.GEAR_RATIO
+            hoodTargetAngle = Angle.fromDegrees(transformedAngle)
+
             hoodServo.setServoPosition(Angle.fromDegrees(transformedAngle))
         }
     }
@@ -58,6 +62,7 @@ class Hood(private val hardwareMap: HardwareMap): SubsystemBase() {
     fun log(telemetry: TelemetryManager) {
         telemetry.addLine("Hood")
         telemetry.addData("Hood Position Degrees", hoodServo.getRawPosition() * HoodConstants.Configuration.range.endInclusive.degrees)
+        telemetry.addData("Hood Target Position Degrees", hoodTargetAngle.degrees)
     }
 
     fun configureServo() {

@@ -2,7 +2,10 @@ package org.firstinspires.ftc.teamcode.constants
 
 import com.bylazar.configurables.annotations.Configurable
 import com.qualcomm.robotcore.hardware.PIDCoefficients
+import com.qualcomm.robotcore.hardware.PIDFCoefficients
 import com.seattlesolvers.solverslib.controller.wpilibcontroller.SimpleMotorFeedforward
+import org.firstinspires.ftc.teamcode.subsystems.intake.intakeRollers.IntakeRollersConstants
+import org.firstinspires.ftc.teamcode.subsystems.shooter.flywheel.FlywheelConstants
 import org.firstinspires.ftc.teamcode.utils.units.Angle
 import org.firstinspires.ftc.teamcode.utils.units.AngularVelocity
 
@@ -15,11 +18,16 @@ object DriveMultipliers {
 }
 
 object SubsystemTolerances {
-
+    val TURRET_ANGLE_TOLERANCE = Angle.fromDegrees(1.0)
 }
 
 object SubsystemLimits {
+
+    val INTAKE_MAX_VELOCITY = AngularVelocity(0.0)..AngularVelocity(6000.0 / IntakeRollersConstants.Mechanical.GEAR_RATIO)
+    val SHOOTER_MAX_VELOCITY = AngularVelocity(0.0)..AngularVelocity(6000.0 / FlywheelConstants.Mechanical.GEAR_RATIO)
     val HOOD_MOVEMENT_LIMITS = Angle(0.0)..Angle.fromDegrees(90.0)
+
+    val TURRET_MOVEMENT_LIMITS = Angle.fromDegrees(-180.0)..Angle.fromDegrees(180.0)
 }
 
 object SubsystemPresetTargets {
@@ -34,6 +42,8 @@ object SubsystemPresetTargets {
     val HOOD_PRESET_ANGLE = Angle.fromDegrees(90.0)
 
     val HOOD_HOME_ANGLE = Angle.fromDegrees(90.0)
+
+    val TURRET_ZERO_ANGLE = Angle(0.0)
 }
 
 @Configurable
@@ -49,6 +59,10 @@ object SubsystemConfigurableTargets {
     // Hood Configurable Angle Targets //
     @JvmField
     var HOOD_CONFIGURABLE_ANGLE = 0.0
+
+    // Turret Configurable Angle Targets //
+    @JvmField
+    var TURRET_CONFIGURABLE_ANGLE = 0.0
 }
 
 @Configurable
@@ -64,4 +78,8 @@ object SubsystemControlGains {
     var FLYWHEEL_MOTOR_PID = PIDCoefficients(0.01, 0.0, 0.0)
     @JvmField
     var FLYWHEEL_MOTOR_FEEDFORWARD = SimpleMotorFeedforward(0.0, 1.5, 0.0)
+
+    // Turret PID and Feedforward Configurables //
+    @JvmField
+    var TURRET_SERVOS_PIDF = PIDFCoefficients(0.00575, 0.0, 0.0, 0.0)
 }

@@ -11,6 +11,7 @@ import com.seattlesolvers.solverslib.controller.wpilibcontroller.SimpleMotorFeed
 import com.seattlesolvers.solverslib.command.InstantCommand
 import org.firstinspires.ftc.teamcode.constants.SubsystemConfigurableTargets
 import org.firstinspires.ftc.teamcode.constants.SubsystemControlGains
+import org.firstinspires.ftc.teamcode.constants.SubsystemLimits
 import org.firstinspires.ftc.teamcode.constants.SubsystemPresetTargets
 import org.firstinspires.ftc.teamcode.utils.devices.OpMotorEx
 import org.firstinspires.ftc.teamcode.utils.devices.configurations.motorControlModeConfiguration.MotorVelocityModeConfiguration
@@ -24,6 +25,8 @@ class Flywheel(private val hardwareMap: HardwareMap): SubsystemBase() {
 
     private lateinit var leadFlywheelMotor: OpMotorEx
     private lateinit var followerFlywheelMotor: OpMotorEx
+
+    private var flywheelTargetVelocity: AngularVelocity = AngularVelocity(0.0)
 
     init {
         configureMotors()
@@ -47,6 +50,8 @@ class Flywheel(private val hardwareMap: HardwareMap): SubsystemBase() {
 
     private fun enableFlywheelWithVelocity(velocity: AngularVelocity): Runnable {
         return {
+            flywheelTargetVelocity = velocity.coerceIn(SubsystemLimits.SHOOTER_MAX_VELOCITY)
+
             leadFlywheelMotor.setVelocity(velocity)
             followerFlywheelMotor.setVelocity(velocity)
         }
@@ -93,6 +98,7 @@ class Flywheel(private val hardwareMap: HardwareMap): SubsystemBase() {
         telemetry.addLine("Flywheel")
         telemetry.addData("Flywheel Lead Motor Connected", leadFlywheelMotor.getIsConnected().asBoolean)
         telemetry.addData("Flywheel Follower Motor Connected", followerFlywheelMotor.getIsConnected().asBoolean)
+        telemetry.addData("Flywheel Target Velocity RPM", flywheelTargetVelocity.rpm)
         telemetry.addData("Flywheel Velocity RPM", leadFlywheelMotor.getVelocity().get().rpm)
     }
 
