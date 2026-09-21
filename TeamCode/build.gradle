@@ -59,7 +59,6 @@ dependencies {
     annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
 
     // SolversLib: Latest Stable Version
-
     implementation "org.solverslib:core:0.3.6" // core
     implementation "org.solverslib:pedroPathing:0.3.6" // pedroPathing
 
@@ -68,5 +67,5 @@ dependencies {
     implementation 'com.pedropathing:tuning:1.0.0' // AutoTune (see Tuning.java)
 
     // Panels Dashboard
-    implementation "com.bylazar:fullpanels:1.0.13"
+    implementation "com.bylazar:fullpanels:1.0.12"
 }

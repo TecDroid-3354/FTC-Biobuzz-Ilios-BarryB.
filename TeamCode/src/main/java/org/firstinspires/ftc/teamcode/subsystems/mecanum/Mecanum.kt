@@ -11,6 +11,7 @@ import com.seattlesolvers.solverslib.command.RunCommand
 import com.seattlesolvers.solverslib.command.SubsystemBase
 import com.seattlesolvers.solverslib.gamepad.GamepadEx
 import com.seattlesolvers.solverslib.geometry.Rotation2d
+import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D
 import org.firstinspires.ftc.teamcode.utils.Alliance
 import org.firstinspires.ftc.teamcode.utils.units.Distance
@@ -81,6 +82,10 @@ class Mecanum(
         val distance = follower.pose().distance(target)
 
         return Distance.fromInches(distance)
+    }
+
+    fun followPathCMD(path: Path, holdEnd: Boolean, maxPower: Double): Command {
+        return FollowPathCommand(follower, path, holdEnd, maxPower)
     }
 
     /**

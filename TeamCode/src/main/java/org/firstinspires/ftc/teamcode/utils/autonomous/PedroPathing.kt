@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.utils.autonomous
 import com.pedropathing.algorithm.Foresight
 import com.pedropathing.algorithm.ForesightConfig
 import com.pedropathing.controllers.Controller
+import com.pedropathing.controllers.PiecewiseController
+import com.pedropathing.math.Matrix
 import com.pedropathing.math.Vector2D
 import com.pedropathing.revhub.drivetrains.Mecanum
 import com.pedropathing.revhub.drivetrains.MecanumConfig
@@ -12,6 +14,7 @@ import com.pedropathing.revhub.localizers.PinpointConfig
 import com.pedropathing.revhub.localizers.PinpointLocalizer
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver
 import com.qualcomm.robotcore.hardware.DcMotorSimple
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.pedroPathing.procedures.ForesightTuner
 import org.firstinspires.ftc.teamcode.pedroPathing.procedures.Tests
 import org.firstinspires.ftc.teamcode.utils.units.Distance
@@ -60,16 +63,18 @@ object PedroPathing {
             podType             .set(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
             xPodDirection       .set(GoBildaPinpointDriver.EncoderDirection.FORWARD)
             yPodDirection       .set(GoBildaPinpointDriver.EncoderDirection.FORWARD)
+            globalDistanceUnit  .set(DistanceUnit.INCH)
+            offsetUnits         .set(DistanceUnit.INCH)
             xPodOffset          .set(0.0)
             yPodOffset          .set(0.0)
         }
     }
 
-    fun createMecanumConfig(frontLeftDirection: Optional<DcMotorSimple.Direction>, backLeftDirection: Optional<DcMotorSimple.Direction>,
-                            frontRightDirection: Optional<DcMotorSimple.Direction>, backRightDirection: Optional<DcMotorSimple.Direction>,
-                            useBrakeMode: Optional<Boolean>
+    fun createMecanumConfig(frontLeftDirection: Optional<DcMotorSimple.Direction>, frontRightDirection: Optional<DcMotorSimple.Direction>,
+                            backLeftDirection: Optional<DcMotorSimple.Direction>, backRightDirection: Optional<DcMotorSimple.Direction>,
+                            useBrakeMode: Optional<Boolean>, powerThreshold: Optional<Double>
     ): MecanumConfig {
-        val newConfig = MecanumConfig {}
+        val newConfig = mecanumDefaultConstants
 
         if (frontLeftDirection.isPresent) {
             newConfig.frontLeftDirection.set(frontLeftDirection.get())
@@ -91,13 +96,17 @@ object PedroPathing {
             newConfig.manualBrakeMode.set(useBrakeMode.get())
         }
 
+        if (powerThreshold.isPresent) {
+            newConfig.powerThreshold.set(powerThreshold.get())
+        }
+
         return newConfig
     }
 
     fun createPinpointConfig(xPodDirection: Optional<GoBildaPinpointDriver.EncoderDirection>, yPodDirection: Optional<GoBildaPinpointDriver.EncoderDirection>,
                              xPodOffset: Optional<Distance>, yPodOffset: Optional<Distance>
     ): PinpointConfig {
-        val newConfig = PinpointConfig {}
+        val newConfig = pinpointDefaultConfiguration
 
         if (xPodDirection.isPresent) {
             newConfig.xPodDirection.set(xPodDirection.get())
@@ -118,10 +127,13 @@ object PedroPathing {
         return newConfig
     }
 
-    // TODO Finish adding rest of configs
     fun createForesightConfig(forwardVelocity: Optional<LinearVelocity>, strafeVelocity: Optional<LinearVelocity>,
                               forwardDeceleration: Optional<LinearVelocity>, strafeDeceleration: Optional<LinearVelocity>,
-                              headingBraking: Optional<Vector2D>, headingKp: Optional<Double>,
+                              headingBraking: Optional<Vector2D>, headingKp: Optional<Controller>,
+                              linearBrakeCoefficients: Optional<Matrix>, quadraticBrakeCoefficients: Optional<Matrix>,
+                              coastKV: Optional<Controller>, brakeKV: Optional<Controller>,
+                              primaryForwardTranslational: Optional<Controller>, secondaryForwardTranslational: Optional<Controller>,
+                              primaryLateralTranslational: Optional<Controller>, secondaryLateralTranslational: Optional<Controller>
     ): ForesightConfig {
         val newConfig = ForesightConfig {}
 
@@ -146,7 +158,31 @@ object PedroPathing {
         }
 
         if (headingKp.isPresent) {
-            newConfig.headingFeedback.set(Controller.proportional(headingKp.get()))
+            newConfig.headingFeedback.set(headingKp.get())
+        }
+
+        if (linearBrakeCoefficients.isPresent) {
+            newConfig.linearBrakeCoefficients.set(linearBrakeCoefficients.get())
+        }
+
+        if (quadraticBrakeCoefficients.isPresent) {
+            newConfig.quadraticBrakeCoefficients.set(quadraticBrakeCoefficients.get())
+        }
+
+        if (coastKV.isPresent) {
+            newConfig.coast.set(coastKV.get())
+        }
+
+        if (brakeKV.isPresent) {
+            newConfig.brake.set(brakeKV.get())
+        }
+
+        if (primaryForwardTranslational.isPresent && secondaryForwardTranslational.isPresent) {
+            newConfig.forwardTranslational.set(Controller.piecewise(secondaryForwardTranslational.get()).put(2.5, primaryForwardTranslational.get()))
+        }
+
+        if (primaryLateralTranslational.isPresent && secondaryLateralTranslational.isPresent) {
+            newConfig.strafeTranslational.set(Controller.piecewise(secondaryLateralTranslational.get()).put(2.5, primaryLateralTranslational.get()))
         }
 
         return newConfig

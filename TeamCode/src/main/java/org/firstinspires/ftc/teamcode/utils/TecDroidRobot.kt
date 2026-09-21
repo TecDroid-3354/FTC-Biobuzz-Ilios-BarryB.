@@ -32,15 +32,17 @@ abstract class TecDroidRobot(private val telemetry: Telemetry, private val hardw
 
     abstract fun initTeleOp()
 
+    abstract fun preLoopTeleOp()
+
     abstract fun loopTeleOp()
 
     abstract fun initAuto(startingPose: Pose)
 
     abstract fun onEnd()
 
-    abstract fun followPathCMD(path: Path, holdEnd: Boolean): Command
+    abstract fun followPathCMD(path: Path, holdEnd: Boolean, maxPower: Double): Command
 
-    abstract fun getFollower(): Follower?
+    abstract fun getFollower(): Follower
 
     private fun initBulkReadings() {
         super.setBulkReading(hardwareMap, LynxModule.BulkCachingMode.MANUAL)
@@ -48,9 +50,9 @@ abstract class TecDroidRobot(private val telemetry: Telemetry, private val hardw
 
     override fun run() {
         CommandScheduler.getInstance().run()
-        loopTeleOp()
         OpMotorEx.updateAll()
         OpServoEx.updateAll()
+        loopTeleOp()
         printTelemetry()
         pTelemetry.update(telemetry)
     }
