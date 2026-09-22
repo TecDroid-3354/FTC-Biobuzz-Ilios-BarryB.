@@ -377,7 +377,8 @@ private class RTPServo(hw: HardwareMap, val config: RTPServoConfig) {
         telemetry.addData("Is at set point", isAtSetPoint())
         // System's angle (considering gear ratios)
         telemetry.addData("Absolute Angle (considering gear ratios)", getAngle().degrees)
-        telemetry.addData("pidfcoefficients", getPIDF().toString())
+
+        telemetry.addData("PIDF Coefficients", getPIDF().toString())
     }
 
     /**

@@ -41,7 +41,7 @@ class Turret(private val hardwareMap: HardwareMap): SubsystemBase() {
 
     private fun setTurretAngle(angle: Angle): Runnable {
         return {
-            val clampedAngle = angle.coerceIn(SubsystemLimits.TURRET_MOVEMENT_LIMITS)
+            val clampedAngle = angle.coerceIn(SubsystemLimits.TURRET_ANGLE_LIMITS)
             turretTargetAngle = clampedAngle
 
             leftTurretServo.runToPosition(clampedAngle)
@@ -54,7 +54,7 @@ class Turret(private val hardwareMap: HardwareMap): SubsystemBase() {
     }
 
     fun setTurretConfigurableAngle(): Command {
-        return setTurretAngle(Angle.fromDegrees(SubsystemConfigurableTargets.TURRET_CONFIGURABLE_ANGLE)).InstantCommand(this)
+        return setTurretAngle(Angle.fromDegrees(SubsystemConfigurableTargets.TURRET_CONFIGURABLE_DEGREES)).InstantCommand(this)
     }
 
     fun setCalculatedTurretAngle(angle: Supplier<Angle>): Command {

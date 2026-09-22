@@ -44,7 +44,7 @@ class IntakeRollers(hardwareMap: HardwareMap): SubsystemBase() {
 
     private fun enableIntakeRollersWithVelocity(velocity: AngularVelocity): Runnable {
         return {
-            intakeRollersTargetVelocity = velocity.coerceIn(SubsystemLimits.INTAKE_MAX_VELOCITY)
+            intakeRollersTargetVelocity = velocity.coerceIn(SubsystemLimits.INTAKE_ROLLERS_MAX_VELOCITY)
 
             intakeRollersMotor.setVelocity(velocity)
         }

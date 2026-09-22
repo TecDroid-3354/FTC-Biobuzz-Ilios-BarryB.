@@ -62,10 +62,12 @@ dependencies {
     implementation "org.solverslib:core:0.3.6" // core
     implementation "org.solverslib:pedroPathing:0.3.6" // pedroPathing
 
+    implementation "com.acmerobotics.dashboard:dashboard:0.5.1"
+
     // Pedro Pathing
     implementation 'com.pedropathing:revhub:3.0.1'
     implementation 'com.pedropathing:tuning:1.0.1' // AutoTune (see Tuning.java)
 
     // Panels Dashboard
-    implementation "com.bylazar:fullpanels:1.0.12"
+    implementation "com.bylazar:fullpanels:1.0.13"
 }

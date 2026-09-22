@@ -54,6 +54,5 @@ abstract class TecDroidRobot(private val telemetry: Telemetry, private val hardw
         OpServoEx.updateAll()
         loopTeleOp()
         printTelemetry()
-        pTelemetry.update(telemetry)
     }
 }

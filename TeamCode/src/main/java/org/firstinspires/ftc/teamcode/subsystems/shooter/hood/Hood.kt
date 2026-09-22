@@ -26,7 +26,7 @@ class Hood(private val hardwareMap: HardwareMap): SubsystemBase() {
 
     private fun setHoodPosition(angle: Angle): Runnable {
         return Runnable {
-            val clampedAngle = angle.coerceIn(SubsystemLimits.HOOD_MOVEMENT_LIMITS)
+            val clampedAngle = angle.coerceIn(SubsystemLimits.HOOD_ANGLE_LIMITS)
             val transformedAngle = clampedAngle.degrees * HoodConstants.Mechanical.GEAR_RATIO
             hoodTargetAngle = Angle.fromDegrees(transformedAngle)
 
@@ -39,7 +39,7 @@ class Hood(private val hardwareMap: HardwareMap): SubsystemBase() {
     }
 
     fun setHoodConfigurableAngle(): Command {
-        return setHoodPosition(Angle.fromDegrees(SubsystemConfigurableTargets.HOOD_CONFIGURABLE_ANGLE)).InstantCommand(this)
+        return setHoodPosition(Angle.fromDegrees(SubsystemConfigurableTargets.HOOD_CONFIGURABLE_DEGREES)).InstantCommand(this)
     }
 
     fun setHoodCalculatedAngle(flywheelDistanceToTarget: Supplier<Distance>): Command {

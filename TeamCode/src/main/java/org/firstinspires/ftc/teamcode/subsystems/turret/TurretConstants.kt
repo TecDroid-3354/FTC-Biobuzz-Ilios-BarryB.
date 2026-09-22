@@ -30,7 +30,7 @@ object TurretConstants {
 
         private const val RIGHT_INVERTED = false
 
-        private const val MAX_POWER = 0.99
+        private const val TURRET_SERVOS_MAX_POWER = 0.99
 
         private val leftAbsoluteMaxVoltage = Voltage(3.3)
 
@@ -39,11 +39,11 @@ object TurretConstants {
         val leftTurretServoConfiguration = ServoRunToPositionModeConfiguration()
             .withInverted(LEFT_INVERTED)
             .withGearRatio(Mechanical.GEAR_RATIO)
-            .withMaxPower(MAX_POWER)
+            .withMaxPower(TURRET_SERVOS_MAX_POWER)
             .withAbsoluteId(Identification.LEFT_ABSOLUTE_ENCODER_ID)
             .withEncoderOffset(Mechanical.leftEncoderOffset)
             .withAbsoluteMaxVoltage(leftAbsoluteMaxVoltage)
-            .withPositionLimits(SubsystemLimits.TURRET_MOVEMENT_LIMITS)
+            .withPositionLimits(SubsystemLimits.TURRET_ANGLE_LIMITS)
             .withPIDFCoefficients(SubsystemControlGains.TURRET_SERVOS_PIDF)
             .withPositionTolerance(SubsystemTolerances.TURRET_ANGLE_TOLERANCE)
 

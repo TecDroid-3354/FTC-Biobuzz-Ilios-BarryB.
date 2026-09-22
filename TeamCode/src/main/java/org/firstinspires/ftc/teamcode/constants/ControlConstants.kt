@@ -20,21 +20,26 @@ object DriveMultipliers {
 
 object SubsystemTolerances {
     val TURRET_ANGLE_TOLERANCE = Angle.fromDegrees(1.0)
+    val INTAKE_DEPLOY_ANGLE_TOLERANCE = Angle.fromDegrees(1.0)
 }
 
 object SubsystemLimits {
-
-    val INTAKE_MAX_VELOCITY = AngularVelocity(0.0)..AngularVelocity(6000.0 / IntakeRollersConstants.Mechanical.GEAR_RATIO)
+    val INTAKE_ROLLERS_MAX_VELOCITY = AngularVelocity(0.0)..AngularVelocity(6000.0 / IntakeRollersConstants.Mechanical.GEAR_RATIO)
+    val INTAKE_DEPLOY_ANGLE_LIMITS = Angle.fromDegrees(0.0)..Angle.fromDegrees(90.0)
     val SHOOTER_MAX_VELOCITY = AngularVelocity(0.0)..AngularVelocity(6000.0 / FlywheelConstants.Mechanical.GEAR_RATIO)
-    val HOOD_MOVEMENT_LIMITS = Angle(0.0)..Angle.fromDegrees(90.0)
-    val TURRET_MOVEMENT_LIMITS = Angle.fromDegrees(-180.0)..Angle.fromDegrees(180.0)
+    val HOOD_ANGLE_LIMITS = Angle(0.0)..Angle.fromDegrees(90.0)
+    val TURRET_ANGLE_LIMITS = Angle.fromDegrees(-180.0)..Angle.fromDegrees(180.0)
     val INDEXER_MAX_VELOCITY = AngularVelocity(0.0)..AngularVelocity(6000.0 / IndexerConstants.Mechanical.GEAR_RATIO)
 }
 
 object SubsystemPresetTargets {
-    // Intake Preset RPM Targets //
+    // Intake Rollers Preset RPM Targets //
     val INTAKE_ROLLERS_FLOOR_RPM = AngularVelocity.fromRpm(4000.0)
     val INTAKE_ROLLERS_FLOWER_RPM = AngularVelocity.fromRpm(4000.0)
+
+    // Intake Deploy Preset Angle Targets //
+    val INTAKE_DEPLOY_FLOOR_ANGLE = Angle.fromDegrees(0.0)
+    val INTAKE_DEPLOY_FLOWER_ANGLE = Angle.fromDegrees(90.0)
 
     // Shooter Preset RPM Targets //
     val FLYWHEEL_PRESET_RPM = AngularVelocity.fromRpm(3000.0)
@@ -52,9 +57,13 @@ object SubsystemPresetTargets {
 
 @Configurable
 object SubsystemConfigurableTargets {
-    // Intake Configurable RPM Targets //
+    // Intake Rollers Configurable RPM Targets //
     @JvmField
     var INTAKE_ROLLERS_CONFIGURABLE_RPM = 0.0
+
+    // Intake Deploy Configurable Angle Targets //
+    @JvmField
+    var INTAKE_DEPLOY_CONFIGURABLE_DEGREES = 0.0
 
     // Shooter Configurable RPM Targets //
     @JvmField
@@ -62,11 +71,11 @@ object SubsystemConfigurableTargets {
 
     // Hood Configurable Angle Targets //
     @JvmField
-    var HOOD_CONFIGURABLE_ANGLE = 0.0
+    var HOOD_CONFIGURABLE_DEGREES = 0.0
 
     // Turret Configurable Angle Targets //
     @JvmField
-    var TURRET_CONFIGURABLE_ANGLE = 0.0
+    var TURRET_CONFIGURABLE_DEGREES = 0.0
 
     // Indexer Configurable RPM Targets //
     @JvmField
@@ -80,6 +89,10 @@ object SubsystemControlGains {
     var INTAKE_ROLLERS_MOTOR_PID = PIDCoefficients(0.1, 0.0, 0.0)
     @JvmField
     var INTAKE_ROLLERS_MOTOR_FEEDFORWARD = SimpleMotorFeedforward(0.0, 1.0, 0.0)
+
+    // Intake Deploy PID and Feedforward Configurables //
+    @JvmField
+    var INTAKE_DEPLOY_SERVOS_PIDF = PIDFCoefficients(0.00575, 0.0, 0.0, 0.0)
 
     // Shooter PID and Feedforward Configurables //
     @JvmField
