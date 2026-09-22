@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.utils.autonomous
 import com.pedropathing.algorithm.Foresight
 import com.pedropathing.algorithm.ForesightConfig
 import com.pedropathing.controllers.Controller
-import com.pedropathing.controllers.PiecewiseController
 import com.pedropathing.math.Matrix
 import com.pedropathing.math.Vector2D
 import com.pedropathing.revhub.drivetrains.Mecanum
@@ -15,8 +14,8 @@ import com.pedropathing.revhub.localizers.PinpointLocalizer
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
-import org.firstinspires.ftc.teamcode.pedroPathing.procedures.ForesightTuner
-import org.firstinspires.ftc.teamcode.pedroPathing.procedures.Tests
+import org.firstinspires.ftc.teamcode.autonomous.pedroPathing.procedures.ForesightTuner
+import org.firstinspires.ftc.teamcode.autonomous.pedroPathing.procedures.Tests
 import org.firstinspires.ftc.teamcode.utils.units.Distance
 import org.firstinspires.ftc.teamcode.utils.units.LinearVelocity
 import java.util.Optional

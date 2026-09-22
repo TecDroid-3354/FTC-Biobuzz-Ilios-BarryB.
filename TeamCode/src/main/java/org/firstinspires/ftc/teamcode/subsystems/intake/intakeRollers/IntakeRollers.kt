@@ -23,7 +23,7 @@ class IntakeRollers(hardwareMap: HardwareMap): SubsystemBase() {
     private var intakeRollersTargetVelocity: AngularVelocity = AngularVelocity(0.0)
     
     init {
-        intakeRollersMotor = OpMotorEx(hardwareMap,IntakeRollersConstants.Identification.INTAKE_ROLLERS_MOTOR_ID)
+        intakeRollersMotor = OpMotorEx(hardwareMap, IntakeRollersConstants.Identification.INTAKE_ROLLERS_MOTOR_ID)
         intakeRollersMotor.applyConfigurationAndResetEncoder(IntakeRollersConstants.Configuration.intakeRollersConfiguration)
     }
 

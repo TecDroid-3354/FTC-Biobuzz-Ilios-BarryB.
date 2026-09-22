@@ -109,9 +109,9 @@ class Mecanum(
         val radialUnitVector = Vector2d(radialUnitTranslation.x, radialUnitTranslation.y)
 
         val velocityVector = Vector2d(fieldRelativeVelocity.vxMetersPerSecond, fieldRelativeVelocity.vyMetersPerSecond)
-        val radialVectorNorm = velocityVector.dot(radialUnitVector)
+        val radialVectorMagnitude = velocityVector.dot(radialUnitVector)
 
-        return LinearVelocity.fromMps(radialVectorNorm)
+        return LinearVelocity.fromMps(radialVectorMagnitude)
     }
 
     /**
@@ -132,9 +132,9 @@ class Mecanum(
         val tangentialUnitVector = Vector2d(tangentialUnitTranslation.x, tangentialUnitTranslation.y)
 
         val velocityVector = Vector2d(fieldRelativeSpeeds.vxMetersPerSecond, fieldRelativeSpeeds.vyMetersPerSecond)
-        val tangentialVectorNorm = velocityVector.dot(tangentialUnitVector)
+        val tangentialVectorMagnitude = velocityVector.dot(tangentialUnitVector)
 
-        return LinearVelocity.fromMps(tangentialVectorNorm)
+        return LinearVelocity.fromMps(tangentialVectorMagnitude)
     }
 
     /**
@@ -165,6 +165,7 @@ class Mecanum(
 
     fun followPathCMD(path: Path, holdEnd: Boolean, maxPower: Double): Command {
         return FollowPathCommand(follower, path, holdEnd, maxPower)
+            .addRequirements(this)
     }
 
     /**
